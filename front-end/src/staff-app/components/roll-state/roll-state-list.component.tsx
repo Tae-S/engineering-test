@@ -48,11 +48,11 @@ const S = {
   ListItem: styled.div`
     display: flex;
     align-items: center;
-    margin-right: ${Spacing.u2};
+    margin-right: ${Spacing.u4};
 
     span {
       font-weight: ${FontWeight.strong};
-      margin-left: ${Spacing.u2};
+      margin-left: ${Spacing.u1};
     }
   `,
 }

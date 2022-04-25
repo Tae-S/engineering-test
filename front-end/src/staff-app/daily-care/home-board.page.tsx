@@ -10,6 +10,9 @@ import { useApi } from "shared/hooks/use-api"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 
+import { useDispatch, useSelector } from 'react-redux'
+import { initial } from './../../features/roll'
+
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
@@ -17,7 +20,8 @@ export const HomeBoardPage: React.FC = () => {
   const SORT_ORDER = ['asc', 'desc', 'ascLast', 'descLast', 'id']
   const [sortDisplayText, setSortDisplayText] = useState('id')
   const [sortClicks, setSortClicks] = useState(0)
-
+  const rollStateList = useSelector((state:any) => state.roll.value)
+  const dispatch = useDispatch()
   useEffect(() => {
     void getStudents()
   }, [getStudents])
@@ -67,6 +71,14 @@ export const HomeBoardPage: React.FC = () => {
       data?.students.sort((a:Person, b:Person) : boolean => a.id - b.id)
     }
   }
+  // setInterval(()=> console.log(rollStateList), 2000)
+  //ADDED: roll handlers
+  //initial state set
+  useEffect(()=>{
+    if(typeof(data) !== 'undefined')  dispatch(initial({len: data.students.length, rollState:'unmark'}))
+    
+  },[data])
+
   return (
     <>
       <S.PageContainer>
