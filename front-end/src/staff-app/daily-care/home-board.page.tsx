@@ -13,6 +13,10 @@ import { ActiveRollOverlay, ActiveRollAction } from "staff-app/components/active
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
   const [getStudents, data, loadState] = useApi<{ students: Person[] }>({ url: "get-homeboard-students" })
+  const [_data, set_Data] = useState([])
+  const SORT_ORDER = ['asc', 'desc', 'ascLast', 'descLast', 'id']
+  const [sortDisplayText, setSortDisplayText] = useState('id')
+  const [sortClicks, setSortClicks] = useState(0)
 
   useEffect(() => {
     void getStudents()
@@ -29,11 +33,49 @@ export const HomeBoardPage: React.FC = () => {
       setIsRollMode(false)
     }
   }
+  const handleSortClick = (): void => {
+    setSortDisplayText(SORT_ORDER[(sortClicks)%5])
+    setSortClicks(prevState => ++prevState)
+    sortNames()
+  }
 
+  const handleSearchChange = (e) => {
+    const _search = e.target.value
+    let a = [1, 2, 3,4,5]
+    const _found : Person[] | undefined = data?.students.filter(stu => stu.first_name === _search || stu.last_name === _search || stu.id == _search)
+    console.log(_found)
+    set_Data(_found?_found:[])
+  }
+  function sortNames(order:number=sortClicks){
+    console.log(order)
+    // const _data = data?.students
+    const _sortIndex: number = order%5
+    if(SORT_ORDER[_sortIndex] === SORT_ORDER[0]){
+      data?.students.sort((a:Person, b:Person) : boolean => a.first_name.localeCompare(b.first_name) )
+      console.log(data)
+    }
+    else if(SORT_ORDER[_sortIndex] === SORT_ORDER[1]){
+      data?.students.sort((a:Person, b:Person) : boolean => b.first_name.localeCompare(a.first_name) )
+    }
+    else if(SORT_ORDER[_sortIndex] === SORT_ORDER[2]){
+      data?.students.sort((a:Person, b:Person) : boolean => a.last_name.localeCompare(b.last_name) )
+    }
+    else if(SORT_ORDER[_sortIndex] === SORT_ORDER[3]){
+      data?.students.sort((a:Person, b:Person) : boolean => b.last_name.localeCompare(a.last_name) )
+    }
+    else if(SORT_ORDER[_sortIndex] === SORT_ORDER[4]){
+      data?.students.sort((a:Person, b:Person) : boolean => a.id - b.id)
+    }
+  }
   return (
     <>
       <S.PageContainer>
-        <Toolbar onItemClick={onToolbarAction} />
+        <Toolbar 
+          onItemClick={onToolbarAction} 
+          onSortClick={handleSortClick} 
+          sortDisplay={sortDisplayText} 
+          onSearchChange={handleSearchChange}
+        />
 
         {loadState === "loading" && (
           <CenteredContainer>
@@ -41,7 +83,15 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
 
-        {loadState === "loaded" && data?.students && (
+        {loadState === "loaded" && _data.length !== 0 && data?.students && (
+          <>
+            {_data.map((s) => (
+              <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
+            ))}
+          </>
+        )}
+
+        {loadState === "loaded" && _data.length === 0 && data?.students && (
           <>
             {data.students.map((s) => (
               <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
@@ -62,14 +112,19 @@ export const HomeBoardPage: React.FC = () => {
 
 type ToolbarAction = "roll" | "sort"
 interface ToolbarProps {
-  onItemClick: (action: ToolbarAction, value?: string) => void
+  onItemClick: (action: ToolbarAction, value?: string) => void,
+  onSortClick: () => void,
+  sortDisplay: string,
+  onSearchChange: (e:any) => void
 }
 const Toolbar: React.FC<ToolbarProps> = (props) => {
-  const { onItemClick } = props
+  const { onItemClick, onSortClick, sortDisplay, onSearchChange } = props
+  
   return (
     <S.ToolbarContainer>
-      <div onClick={() => onItemClick("sort")}>First Name</div>
-      <div>Search</div>
+      <div onClick={() => {onSortClick(); onItemClick("sort");}}>Name ({sortDisplay})</div>
+      {/* <div></div> */}
+      <input type='text' placeholder='search' style={styles.inputStyles} onChange={(e) => onSearchChange(e)}/>
       <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
     </S.ToolbarContainer>
   )
@@ -99,4 +154,14 @@ const S = {
       border-radius: ${BorderRadius.default};
     }
   `,
+}
+
+const styles = {
+  inputStyles: {
+    'outline': 'none',
+    'border': 'none',
+    'background': 'transparent',
+    'color': '#efefef',
+    'borderBottom': '1px solid #efefef'
+  }
 }
