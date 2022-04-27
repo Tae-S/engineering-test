@@ -47,5 +47,6 @@ const S = {
     width: ${({ size }) => size}px;
     height: ${({ size }) => size}px;
     cursor: ${({ clickable }) => (clickable ? "pointer" : undefined)};
+
   `,
 }

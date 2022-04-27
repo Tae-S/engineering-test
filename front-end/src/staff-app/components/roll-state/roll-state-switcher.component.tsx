@@ -23,7 +23,6 @@ export const RollStateSwitcher: React.FC<Props> = ({ initialState = "unmark", si
 
   const onClick = (e: any) => {
     const next = nextState()
-    
     setRollState(next)
     if (onStateChange) {
       onStateChange(next)

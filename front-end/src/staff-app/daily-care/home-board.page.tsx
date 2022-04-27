@@ -78,7 +78,10 @@ export const HomeBoardPage: React.FC = () => {
     if(typeof(data) !== 'undefined')  dispatch(initial({len: data.students.length, rollState:'unmark'}))
     
   },[data])
-
+  //roll filter handler
+  const handleRollFilter = (e) => {
+    console.log('Handling ', e.target)
+  }
   return (
     <>
       <S.PageContainer>
@@ -117,7 +120,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} />
+      <ActiveRollOverlay onRollFilter={(e) => handleRollFilter(e)} isActive={isRollMode} onItemClick={onActiveRollAction} />
     </>
   )
 }

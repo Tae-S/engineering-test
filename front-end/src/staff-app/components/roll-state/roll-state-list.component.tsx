@@ -11,7 +11,9 @@ interface Props {
   size?: number
 }
 export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick }) => {
+  // console.log(onItemClick)
   const onClick = (type: ItemType) => {
+    console.log('HELLLLLOOOOO', type)
     if (onItemClick) {
       onItemClick(type)
     }
@@ -31,7 +33,7 @@ export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemCli
 
         return (
           <S.ListItem key={i}>
-            <RollStateIcon type={s.type} size={size} onClick={() => onClick(s.type)} />
+            <RollStateIcon data-type={s.type} type={s.type} size={size} onClick={() => onClick(s.type)} />
             <span>{s.count}</span>
           </S.ListItem>
         )

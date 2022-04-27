@@ -8,11 +8,12 @@ import { useSelector } from 'react-redux'
 export type ActiveRollAction = "filter" | "exit"
 interface Props {
   isActive: boolean
-  onItemClick: (action: ActiveRollAction, value?: string) => void
+  onItemClick: (action: ActiveRollAction, value?: string) => void,
+  onRollFilter: (e) => void
 }
 
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
-  const { isActive, onItemClick } = props
+  const { isActive, onItemClick, onRollFilter } = props
   const rollStateList = useSelector(state => state.roll.value)
   const [_stateList, set_StateList] = useState([
     { type: "all", count: 0 },
@@ -28,16 +29,20 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
       { type: 'late', count: 0 },
       { type: 'absent', count: 0 },
     ]
-    console.log('ran becoz changed')
+    // console.log('ran becoz changed')
     rollStateList.forEach((r:any) => {
       if(r === 'present') ++_list[1].count
       else if(r === 'late') ++_list[2].count
       else if(r === 'absent') ++_list[3].count
     })
-    console.log(rollStateList)
+    // console.log(rollStateList)
     set_StateList(_list)
     
   },[rollStateList])
+  //handle roll filter 
+  // const handleRollFilter = () => {
+  //   console.log('HEREEEEEEEEEEEEEEEEEEERERE')
+  // }
   return (
     <S.Overlay isActive={isActive}>
       <S.Content>
@@ -45,6 +50,7 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
         <div>
           <RollStateList
             stateList={_stateList}
+            onItemClick = {(e) => onRollFilter(e)}
           />
           <div style={{ marginTop: Spacing.u6 }}>
             <Button color="inherit" onClick={() => onItemClick("exit")}>
